@@ -31,20 +31,21 @@ app.post("/ODVL", (req, res) => {
     const oDVL = new ODVL({
         bookedDate : date
     });
+    const traineeArray = JSON.parse(req.body.Trainees).Items;
 
-    const traineeName = req.body.Name;
-    const traineeId = req.body.Id;
-    const traineeInterchange = req.body.Interchange;
-
-    oDVL.trainees.push({
-        name: traineeName,
-        id: traineeId,
-        interchange: traineeInterchange
+    traineeArray.forEach(element => {
+        oDVL.trainees.push(element);
     });
 
-    oDVL.save();
-
-    res.send("Success");
+    oDVL.save((err) => {
+        if(err)
+        {
+            res.send(err);
+        }
+        else{
+            res.send("Success");
+        }
+    });
 
     console.log("New user info saved");
 });
