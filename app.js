@@ -15,25 +15,106 @@ const traineeSchema = new mongoose.Schema({
     interchange: String
 });
 
-const Trainee = mongoose.model("Trainee", traineeSchema);
+const trainingTypeSchema = new mongoose.Schema({
+    bookedDate: Number,
+    trainees: [traineeSchema]
+});
 
-app.post("/", (req, res) => {
+const ODVL = mongoose.model("ODVL", trainingTypeSchema);
+const Corrective = mongoose.model("Corrective", trainingTypeSchema);
+const Intervention = mongoose.model("Intervention", trainingTypeSchema);
+//const Trainee = mongoose.model("Trainee", traineeSchema);
+
+app.post("/ODVL", (req, res) => {
+
+    const date = req.body.BookedDate;
+    const oDVL = new ODVL({
+        bookedDate : date
+    });
+
     const traineeName = req.body.Name;
     const traineeId = req.body.Id;
     const traineeInterchange = req.body.Interchange;
 
-    const trainee = new Trainee({
+    oDVL.trainees.push({
         name: traineeName,
         id: traineeId,
         interchange: traineeInterchange
     });
 
-    trainee.save();
+    oDVL.save();
 
     res.send("Success");
 
     console.log("New user info saved");
 });
+
+app.post("/Corrective", (req, res) => {
+
+    const date= req.body.BookedDate;
+    const corrective = new Corrective({
+        bookedDate : date
+    });
+
+    const traineeName = req.body.Name;
+    const traineeId = req.body.Id;
+    const traineeInterchange = req.body.Interchange;
+
+    corrective.trainees.push({
+        name: traineeName,
+        id: traineeId,
+        interchange: traineeInterchange
+    });
+
+    corrective.save();
+
+    res.send("Success");
+
+    console.log("New user info saved");
+});
+
+app.post("/Intervention", (req, res) => {
+
+    const date= req.body.BookedDate;
+    const intervention = new Intervention({
+        bookedDate : date
+    });
+
+    const traineeName = req.body.Name;
+    const traineeId = req.body.Id;
+    const traineeInterchange = req.body.Interchange;
+
+    intervention.trainees.push({
+        name: traineeName,
+        id: traineeId,
+        interchange: traineeInterchange
+    });
+
+    intervention.save();
+
+    res.send("Success");
+
+    console.log("New user info saved");
+});
+
+
+// app.post("/", (req, res) => {
+//     const traineeName = req.body.Name;
+//     const traineeId = req.body.Id;
+//     const traineeInterchange = req.body.Interchange;
+
+//     const trainee = new Trainee({
+//         name: traineeName,
+//         id: traineeId,
+//         interchange: traineeInterchange
+//     });
+
+//     trainee.save();
+
+//     res.send("Success");
+
+//     console.log("New user info saved");
+// });
 
 app.listen(3000, () => console.log("Server Started Successfully"));
 
