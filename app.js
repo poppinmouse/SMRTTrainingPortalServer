@@ -98,6 +98,24 @@ app.post("/Intervention", (req, res) => {
     console.log("New user info saved");
 });
 
+app.get("/Dates",(req, res) => {
+    var appointedDates = {dates : []};
+    ODVL.find((err, bookings) => {
+        if(err)
+        {
+            console.log(err);
+        }
+        else
+        {
+            bookings.forEach(booking=> {
+                appointedDates.dates.push(booking.bookedDate);
+            });
+            res.send(appointedDates);
+        }
+    });
+ 
+});
+
 
 // app.post("/", (req, res) => {
 //     const traineeName = req.body.Name;
