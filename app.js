@@ -120,8 +120,50 @@ app.get("/Dates",(req, res) => {
     }).then(() => {
         res.send(appointedDates);
     });
-    
-    // ODVL.find((err, bookings) => {
+
+});
+
+const fetchData = (collection) => {
+    const promise = new Promise((resolve, reject) => {
+        collection.find((err, bookings) => {
+            if(err)
+            {
+                console.log(err);
+            }
+            else
+            {
+                resolve(bookings);
+            }
+        });     
+    });
+
+    return promise;
+}
+
+app.listen(3000, () => console.log("Server Started Successfully"));
+
+
+
+
+// app.post("/", (req, res) => {
+//     const traineeName = req.body.Name;
+//     const traineeId = req.body.Id;
+//     const traineeInterchange = req.body.Interchange;
+
+//     const trainee = new Trainee({
+//         name: traineeName,
+//         id: traineeId,
+//         interchange: traineeInterchange
+//     });
+
+//     trainee.save();
+
+//     res.send("Success");
+
+//     console.log("New user info saved");
+// });
+
+   // ODVL.find((err, bookings) => {
     //     if(err)
     //     {
     //         console.log(err);
@@ -161,50 +203,3 @@ app.get("/Dates",(req, res) => {
     //         });
     //     }
     // });
-});
-
-const fetchData = (collection) => {
-    const promise = new Promise((resolve, reject) => {
-        collection.find((err, bookings) => {
-            if(err)
-            {
-                console.log(err);
-            }
-            else
-            {
-                resolve(bookings);
-            }
-        });     
-    });
-
-    return promise;
-}
-
-const pushToArray = (array, collection) => {
-    collection.forEach(booking=> {
-        array.push(booking.bookedDate);
-    });
-}
-
-app.listen(3000, () => console.log("Server Started Successfully"));
-
-
-
-
-// app.post("/", (req, res) => {
-//     const traineeName = req.body.Name;
-//     const traineeId = req.body.Id;
-//     const traineeInterchange = req.body.Interchange;
-
-//     const trainee = new Trainee({
-//         name: traineeName,
-//         id: traineeId,
-//         interchange: traineeInterchange
-//     });
-
-//     trainee.save();
-
-//     res.send("Success");
-
-//     console.log("New user info saved");
-// });
