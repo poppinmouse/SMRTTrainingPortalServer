@@ -15,7 +15,13 @@ const traineeSchema = new mongoose.Schema({
     interchange: String
 });
 
+const bookedDateSchema = new mongoose.Schema({
+    bookedDate: Number,
+    hasApproved: Boolean
+});
+
 const trainingTypeSchema = new mongoose.Schema({
+    reservedDates: [Number],
     bookedDate: Number,
     trainees: [traineeSchema]
 });
@@ -26,11 +32,17 @@ const Intervention = mongoose.model("Intervention", trainingTypeSchema);
 //const Trainee = mongoose.model("Trainee", traineeSchema);
 
 app.post("/ODVL", (req, res) => {
-
+  
     const date = req.body.BookedDate;
     const oDVL = new ODVL({
         bookedDate : date
     });
+
+    const dateArray = JSON.parse(req.body.ReservedDates).Items;
+    dateArray.forEach(element => {
+        oDVL.reservedDates.push(element);
+    });
+
     const traineeArray = JSON.parse(req.body.Trainees).Items;
 
     traineeArray.forEach(element => {
@@ -55,6 +67,11 @@ app.post("/Corrective", (req, res) => {
     const date= req.body.BookedDate;
     const corrective = new Corrective({
         bookedDate : date
+    });
+
+    const dateArray = JSON.parse(req.body.ReservedDates).Items;
+    dateArray.forEach(element => {
+        corrective.reservedDates.push(element);
     });
 
     const traineeArray = JSON.parse(req.body.Trainees).Items;
@@ -82,6 +99,11 @@ app.post("/Intervention", (req, res) => {
         bookedDate : date
     });
 
+    const dateArray = JSON.parse(req.body.ReservedDates).Items;
+    dateArray.forEach(element => {
+        intervention.reservedDates.push(element);
+    });
+
     const traineeArray = JSON.parse(req.body.Trainees).Items;
 
     traineeArray.forEach(element => {
@@ -102,25 +124,37 @@ app.post("/Intervention", (req, res) => {
 });
 
 app.get("/Dates",(req, res) => {
-    var appointedDates = {dates : []};
+    var blockedDates = {dates : []};
     fetchData(ODVL).then(bookings => {
         bookings.forEach(booking => {
-            appointedDates.dates.push(booking.bookedDate);
+            blockedDates.dates.push(booking.bookedDate);
+            //if confirmDate is 0 then push below
+            booking.reservedDates.forEach(reservedDate => {
+                blockedDates.dates.push(reservedDate);
+            
+                //else push confirm date
+                
+            });
         });
         return fetchData(Corrective);
     }).then(bookings => {
         bookings.forEach(booking => {
-            appointedDates.dates.push(booking.bookedDate);
+            blockedDates.dates.push(booking.bookedDate);
+            booking.reservedDates.forEach(reservedDate => {
+                blockedDates.dates.push(reservedDate);
+            });
         });
         return fetchData(Intervention);
     }).then(bookings => {
         bookings.forEach(booking => {
-            appointedDates.dates.push(booking.bookedDate);
+            blockedDates.dates.push(booking.bookedDate);
+            booking.reservedDates.forEach(reservedDate => {
+                blockedDates.dates.push(reservedDate);
+            });
         });
     }).then(() => {
-        res.send(appointedDates);
+        res.send(blockedDates);
     });
-
 });
 
 const fetchData = (collection) => {
