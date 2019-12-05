@@ -16,26 +16,31 @@ const traineeSchema = new mongoose.Schema({
 });
 
 const bookedDateSchema = new mongoose.Schema({
-    bookedDate: Number,
+    proposedDate: Number,
     hasApproved: Boolean
 });
 
 const trainingTypeSchema = new mongoose.Schema({
     reservedDates: [Number],
-    bookedDate: Number,
+    bookedDate: bookedDateSchema,
     trainees: [traineeSchema]
 });
 
 const ODVL = mongoose.model("ODVL", trainingTypeSchema);
 const Corrective = mongoose.model("Corrective", trainingTypeSchema);
 const Intervention = mongoose.model("Intervention", trainingTypeSchema);
+
 //const Trainee = mongoose.model("Trainee", traineeSchema);
 
 app.post("/ODVL", (req, res) => {
   
-    const date = req.body.BookedDate;
+    // const date = req.body.BookedDate;
     const oDVL = new ODVL({
-        bookedDate : date
+        // bookedDate : date
+        bookedDate:{
+            proposedDate : 0,
+            hasApproved : false
+        }
     });
 
     const dateArray = JSON.parse(req.body.ReservedDates).Items;
@@ -43,19 +48,22 @@ app.post("/ODVL", (req, res) => {
         oDVL.reservedDates.push(element);
     });
 
+    const bookedDate = JSON.parse(req.body.BookedDate);
+    oDVL.bookedDate = bookedDate;
+
     const traineeArray = JSON.parse(req.body.Trainees).Items;
 
     traineeArray.forEach(element => {
         oDVL.trainees.push(element);
     });
 
-    oDVL.save((err) => {
+    oDVL.save((err, success) => {
         if(err)
         {
             res.send(err);
         }
         else{
-            res.send("Success");
+            res.send(success.id);
         }
     });
 
@@ -64,9 +72,9 @@ app.post("/ODVL", (req, res) => {
 
 app.post("/Corrective", (req, res) => {
 
-    const date= req.body.BookedDate;
+    //const date= req.body.BookedDate;
     const corrective = new Corrective({
-        bookedDate : date
+        //bookedDate : date
     });
 
     const dateArray = JSON.parse(req.body.ReservedDates).Items;
@@ -94,9 +102,9 @@ app.post("/Corrective", (req, res) => {
 
 app.post("/Intervention", (req, res) => {
 
-    const date= req.body.BookedDate;
+    // const date= req.body.BookedDate;
     const intervention = new Intervention({
-        bookedDate : date
+        // bookedDate : date
     });
 
     const dateArray = JSON.parse(req.body.ReservedDates).Items;
@@ -127,14 +135,16 @@ app.get("/Dates",(req, res) => {
     var blockedDates = {dates : []};
     fetchData(ODVL).then(bookings => {
         bookings.forEach(booking => {
-            blockedDates.dates.push(booking.bookedDate);
-            //if confirmDate is 0 then push below
-            booking.reservedDates.forEach(reservedDate => {
-                blockedDates.dates.push(reservedDate);
-            
-                //else push confirm date
-                
-            });
+            if(!booking.bookedDate.hasApproved)
+            {
+                booking.reservedDates.forEach(reservedDate => {
+                    blockedDates.dates.push(reservedDate);
+                });          
+            }            
+            else
+            {
+                blockedDates.dates.push(booking.bookedDate.proposedDate);
+            }    
         });
         return fetchData(Corrective);
     }).then(bookings => {
