@@ -48,8 +48,8 @@ app.post("/ODVL", (req, res) => {
         oDVL.reservedDates.push(element);
     });
 
-    const bookedDate = JSON.parse(req.body.BookedDate);
-    oDVL.bookedDate = bookedDate;
+    // const bookedDate = JSON.parse(req.body.BookedDate);
+    // oDVL.bookedDate = bookedDate;
 
     const traineeArray = JSON.parse(req.body.Trainees).Items;
 
@@ -183,6 +183,38 @@ const fetchData = (collection) => {
 
     return promise;
 }
+
+app.route("/bookings/:bookingId")
+.get((req, res) => {
+    ODVL.findOne({_id : req.params.bookingId},(err, foundBooking) =>{
+        if(foundBooking)
+        {
+            res.send(foundBooking);
+        }
+        else
+        {
+            res.send("No booking matching");
+        }
+    });
+});
+
+app.route("/bookings/:bookingId/bookeddate")
+.post((req, res) => {
+    ODVL.updateOne(
+        {_id : req.params.bookingId},
+        {bookedDate : JSON.parse(req.body.BookedDate)},
+        {overwrite : false},
+        (err) => {
+            if(!err)
+            {
+                res.send("successfully save");
+            }
+            else{
+                console.log(err);
+            }
+        }
+    )
+});
 
 app.listen(3000, () => console.log("Server Started Successfully"));
 
