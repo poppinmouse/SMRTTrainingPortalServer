@@ -2,6 +2,7 @@ const app = require('express')();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
+const schedule = require('node-schedule');
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -247,45 +248,40 @@ app.route("/email")
     });
 });
 
-var a = [
-    {
-      "Address": 25,
-      "AlertType": 1,
-      "Area": "North",
-      "MeasureDate": "01/02/2019",
-      "MeasureValue": -1
-    },
-    {
-      "Address": 26,
-      "AlertType": 1,
-      "Area": "West",
-      "MeasureDate": "2016/04/12",
-      "MeasureValue": -1
-    },
-    {
-      "Address": 25,
-      "AlertType": 1,
-      "Area": "North",
-      "MeasureDate": "2017/02/01",
-      "MeasureValue": -1
-    }
-];
+ 
+//run every 1 min
+var j = schedule.scheduleJob('*/1 * * * *', function(){
 
-var b = ["05/12/2019", "2016/04/12","2017/02/01"];
-
-var d = new Date(Math.max.apply(null, b.map(function(e) {
-    return new Date(e);
-  })));
-
-// var d = new Date(Math.max.apply(null, a.map(function(e) {
-//     return new Date(e.MeasureDate);
-//   })));
-
-  console.log(d.toDateString());
+    fetchData(ODVL).then(bookings => {
+        bookings.forEach(booking => {
+            //if propose date is "" and latest reserved date is less than today, need time to remind
+            if(booking.bookedDate.proposedDate == "")
+            {
+                var d = new Date(Math.max.apply(null, booking.reservedDates.map(reservedDate => {
+                    return new Date(reservedDate);
+                })));       
+                
+                var today = new Date();
+                if(d < today)
+                {
+                    console.log("to remind");
+                }
+            }      
+            //if propose date is more than 0 but hasApproved is false, need to confirm      
+            else
+            {
+                if(!booking.bookedDate.hasApproved)
+                {
+                    console.log("to confirm");
+                }
+            }  
+        });  
+    });
+});
 
 
 app.listen(3000, () => console.log("Server Started Successfully"));
 
-//if propose date is 0 and latest reserved date is less than today, need time to remind
-//if propose date is more than 0 but hasApproved is false, need to confirm
+
+
 
