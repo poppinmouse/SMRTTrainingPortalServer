@@ -271,9 +271,15 @@ var a = [
     }
 ];
 
-var d = new Date(Math.max.apply(null, a.map(function(e) {
-    return new Date(e.MeasureDate);
+var b = ["05/12/2019", "2016/04/12","2017/02/01"];
+
+var d = new Date(Math.max.apply(null, b.map(function(e) {
+    return new Date(e);
   })));
+
+// var d = new Date(Math.max.apply(null, a.map(function(e) {
+//     return new Date(e.MeasureDate);
+//   })));
 
   console.log(d.toDateString());
 
@@ -283,62 +289,3 @@ app.listen(3000, () => console.log("Server Started Successfully"));
 //if propose date is 0 and latest reserved date is less than today, need time to remind
 //if propose date is more than 0 but hasApproved is false, need to confirm
 
-
-// app.post("/", (req, res) => {
-//     const traineeName = req.body.Name;
-//     const traineeId = req.body.Id;
-//     const traineeInterchange = req.body.Interchange;
-
-//     const trainee = new Trainee({
-//         name: traineeName,
-//         id: traineeId,
-//         interchange: traineeInterchange
-//     });
-
-//     trainee.save();
-
-//     res.send("Success");
-
-//     console.log("New user info saved");
-// });
-
-   // ODVL.find((err, bookings) => {
-    //     if(err)
-    //     {
-    //         console.log(err);
-    //     }
-    //     else
-    //     {
-    //         bookings.forEach(booking=> {
-    //             appointedDates.dates.push(booking.bookedDate);
-    //         });
-
-    //         Corrective.find((err, bookings) => {
-    //             if(err)
-    //             {
-    //                 console.log(err);
-    //             }
-    //             else
-    //             {
-    //                 bookings.forEach(booking=> {
-    //                     appointedDates.dates.push(booking.bookedDate);
-    //                 });
-
-    //                 Intervention.find((err, bookings) => {
-    //                     if(err)
-    //                     {
-    //                         console.log(err);
-    //                     }
-    //                     else
-    //                     {
-    //                         bookings.forEach(booking=> {
-    //                             appointedDates.dates.push(booking.bookedDate);
-    //                         });
-
-    //                         res.send(appointedDates);
-    //                     }
-    //                 });                  
-    //             }
-    //         });
-    //     }
-    // });
