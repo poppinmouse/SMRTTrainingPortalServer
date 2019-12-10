@@ -17,12 +17,12 @@ const traineeSchema = new mongoose.Schema({
 });
 
 const bookedDateSchema = new mongoose.Schema({
-    proposedDate: Number,
+    proposedDate: String,
     hasApproved: Boolean
 });
 
 const trainingTypeSchema = new mongoose.Schema({
-    reservedDates: [Number],
+    reservedDates: [String],
     bookedDate: bookedDateSchema,
     trainees: [traineeSchema]
 });
@@ -39,7 +39,7 @@ app.post("/ODVL", (req, res) => {
     const oDVL = new ODVL({
         // bookedDate : date
         bookedDate:{
-            proposedDate : 0,
+            proposedDate : "",
             hasApproved : false
         }
     });
@@ -247,10 +247,41 @@ app.route("/email")
     });
 });
 
+var a = [
+    {
+      "Address": 25,
+      "AlertType": 1,
+      "Area": "North",
+      "MeasureDate": "01/02/2019",
+      "MeasureValue": -1
+    },
+    {
+      "Address": 26,
+      "AlertType": 1,
+      "Area": "West",
+      "MeasureDate": "2016/04/12",
+      "MeasureValue": -1
+    },
+    {
+      "Address": 25,
+      "AlertType": 1,
+      "Area": "North",
+      "MeasureDate": "2017/02/01",
+      "MeasureValue": -1
+    }
+];
+
+var d = new Date(Math.max.apply(null, a.map(function(e) {
+    return new Date(e.MeasureDate);
+  })));
+
+  console.log(d.toDateString());
+
 
 app.listen(3000, () => console.log("Server Started Successfully"));
 
-
+//if propose date is 0 and latest reserved date is less than today, need time to remind
+//if propose date is more than 0 but hasApproved is false, need to confirm
 
 
 // app.post("/", (req, res) => {
