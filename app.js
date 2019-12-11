@@ -14,7 +14,8 @@ mongoose.connect("mongodb://localhost:27017/trainingPortalDB",{useNewUrlParser: 
 const traineeSchema = new mongoose.Schema({
     name: String,
     id: Number,
-    interchange: String
+    interchange: String,
+    absent: Boolean
 });
 
 const bookedDateSchema = new mongoose.Schema({
@@ -25,7 +26,13 @@ const bookedDateSchema = new mongoose.Schema({
 const trainingTypeSchema = new mongoose.Schema({
     reservedDates: [String],
     bookedDate: bookedDateSchema,
-    trainees: [traineeSchema]
+    trainees: [traineeSchema],
+    issueCode: Number 
+    //issueCode reference
+    //0 = no issue
+    //1 = to remind
+    //2 = to confirm
+    //3 = to rebook
 });
 
 const ODVL = mongoose.model("ODVL", trainingTypeSchema);
@@ -42,7 +49,9 @@ app.post("/ODVL", (req, res) => {
         bookedDate:{
             proposedDate : "",
             hasApproved : false
-        }
+        },
+
+        issueCode: 0
     });
 
     const dateArray = JSON.parse(req.body.ReservedDates).Items;
@@ -169,6 +178,19 @@ app.get("/Dates",(req, res) => {
     });
 });
 
+//ODVL only now, may be need to split into other routes for other trainingType
+app.route("/bookings")
+.get((req, res) => {
+    var bookingArr = {bookings : []};
+    fetchData(ODVL).then(bookings => {
+        bookings.forEach(booking => {
+            bookingArr.bookings.push(booking);
+        });
+    }).then(() => {
+        res.send(bookingArr);
+    });
+});
+
 const fetchData = (collection) => {
     const promise = new Promise((resolve, reject) => {
         collection.find((err, bookings) => {
@@ -254,6 +276,13 @@ var j = schedule.scheduleJob('*/1 * * * *', function(){
 
     fetchData(ODVL).then(bookings => {
         bookings.forEach(booking => {
+            booking.trainees.forEach(trainee => {
+                if(trainee.absent)
+                {
+                    updateIssueCode(booking._id, 3);   
+                    //pull absent trainee and sent to trainer              
+                }
+            });
             //if propose date is "" and latest reserved date is less than today, need time to remind
             if(booking.bookedDate.proposedDate == "")
             {
@@ -264,24 +293,42 @@ var j = schedule.scheduleJob('*/1 * * * *', function(){
                 var today = new Date();
                 if(d < today)
                 {
-                    console.log("to remind");
+                    updateIssueCode(booking._id, 2);
+                    //remind to reboook
                 }
             }      
-            //if propose date is more than 0 but hasApproved is false, need to confirm      
+            //if propose date is set but hasApproved is false, need to confirm      
             else
             {
                 if(!booking.bookedDate.hasApproved)
                 {
-                    console.log("to confirm");
+                    updateIssueCode(booking._id, 1);
+                    //remind trainer to confirm
                 }
             }  
         });  
     });
 });
 
+function updateIssueCode(bookingId, code)
+{
+    ODVL.updateOne(
+        {_id : bookingId},
+        {issueCode : code},
+        {overwrite : false},
+        (err) => {
+            if(!err)
+            {
+                console.log("issue with error:  " + code);
+            }
+            else{
+                console.log(err);
+            }
+        }
+   )  
+}
 
 app.listen(3000, () => console.log("Server Started Successfully"));
-
 
 
 
