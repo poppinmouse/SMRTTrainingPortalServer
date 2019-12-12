@@ -30,8 +30,8 @@ const trainingTypeSchema = new mongoose.Schema({
     issueCode: Number 
     //issueCode reference
     //0 = no issue
-    //1 = to remind
-    //2 = to confirm
+    //1 = to confirm
+    //2 = to remind
     //3 = to rebook
 });
 
@@ -231,6 +231,14 @@ app.route("/bookings/:bookingId/bookeddate")
         (err) => {
             if(!err)
             {
+                if(JSON.parse(req.body.BookedDate).hasApproved)
+                {
+                    updateIssueCode(req.params.bookingId, 0);
+                }
+                else
+                {
+                    updateIssueCode(req.params.bookingId, 1);
+                }
                 res.send("successfully save");
             }
             else{
@@ -294,18 +302,18 @@ var j = schedule.scheduleJob('*/1 * * * *', function(){
                 if(d < today)
                 {
                     updateIssueCode(booking._id, 2);
-                    //remind to reboook
+                    //remind 
                 }
             }      
             //if propose date is set but hasApproved is false, need to confirm      
-            else
-            {
-                if(!booking.bookedDate.hasApproved)
-                {
-                    updateIssueCode(booking._id, 1);
-                    //remind trainer to confirm
-                }
-            }  
+            // else
+            // {
+            //     if(!booking.bookedDate.hasApproved)
+            //     {
+            //         updateIssueCode(booking._id, 1);
+            //         //confirm
+            //     }
+            // }  
         });  
     });
 });
