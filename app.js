@@ -173,7 +173,7 @@ app.get("/Dates",(req, res) => {
                 blockedDates.dates.push(reservedDate);
             });
         });
-    }).then(() => {
+    }).then(() => {   
         res.send(blockedDates);
     });
 });
@@ -231,6 +231,7 @@ app.route("/bookings/:bookingId/bookeddate")
         (err) => {
             if(!err)
             {
+                //if approved, issue code 0, else 1
                 if(JSON.parse(req.body.BookedDate).hasApproved)
                 {
                     updateIssueCode(req.params.bookingId, 0);
