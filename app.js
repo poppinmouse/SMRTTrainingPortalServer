@@ -305,7 +305,8 @@ var j = schedule.scheduleJob('*/1 * * * *', function(){
                     updateIssueCode(booking._id, 2);
                     //remind 
                 }
-            }      
+            }     
+             
             //if propose date is set but hasApproved is false, need to confirm      
             // else
             // {
