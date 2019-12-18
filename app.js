@@ -55,6 +55,7 @@ app.post("/ODVL", (req, res) => {
     });
 
     const dateArray = JSON.parse(req.body.ReservedDates).Items;
+  
     dateArray.forEach(element => {
         oDVL.reservedDates.push(element);
     });
@@ -240,6 +241,26 @@ app.route("/bookings/:bookingId/bookeddate")
                 {
                     updateIssueCode(req.params.bookingId, 1);
                 }
+                res.send("successfully save");
+            }
+            else{
+                console.log(err);
+            }
+        }
+    )
+});
+
+
+app.route("/bookings/:bookingId/absentees")
+.post((req, res) => {
+    console.log(req.body.Absentees);
+    ODVL.updateOne(
+        {_id : req.params.bookingId},
+        {trainees : JSON.parse(req.body.Absentees)},
+        {overwrite : false},
+        (err) => {
+            if(!err)
+            {
                 res.send("successfully save");
             }
             else{
