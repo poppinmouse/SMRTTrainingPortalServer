@@ -253,7 +253,6 @@ app.route("/bookings/:bookingId/bookeddate")
 
 app.route("/bookings/:bookingId/absentees")
 .post((req, res) => {
-    console.log(req.body.Absentees);
     ODVL.updateOne(
         {_id : req.params.bookingId},
         {trainees : JSON.parse(req.body.Absentees)},
@@ -262,12 +261,39 @@ app.route("/bookings/:bookingId/absentees")
             if(!err)
             {
                 res.send("successfully save");
+                updateIssueCode(req.params.bookingId, 3);   
             }
             else{
                 console.log(err);
             }
         }
     )
+});
+
+app.route("/bookings/:bookingId/issue")
+.post((req, res) => {
+   
+    if(req.body.Code == "remind")
+    {
+        ODVL.updateOne(
+            {_id : req.params.bookingId},
+            {bookedDate : {proposedDate : "expired"}},
+            {overwrite : false},
+            (err) => {
+                if(!err)
+                {
+                    res.send("successfully save");
+                    updateIssueCode(req.params.bookingId, 0);  
+                }
+                else{
+                    console.log(err);
+                }
+            }
+        )
+    }
+    else{
+        updateIssueCode(req.params.bookingId, 0);  
+    }
 });
 
 
@@ -306,13 +332,12 @@ var j = schedule.scheduleJob('*/1 * * * *', function(){
 
     fetchData(ODVL).then(bookings => {
         bookings.forEach(booking => {
-            booking.trainees.forEach(trainee => {
-                if(trainee.absent)
-                {
-                    updateIssueCode(booking._id, 3);   
-                    //pull absent trainee and sent to trainer              
-                }
-            });
+            // booking.trainees.forEach(trainee => {
+            //     if(trainee.absent)
+            //     {
+            //         updateIssueCode(booking._id, 3);              
+            //     }
+            // });
             //if propose date is "" and latest reserved date is less than today, need time to remind
             if(booking.bookedDate.proposedDate == "")
             {
