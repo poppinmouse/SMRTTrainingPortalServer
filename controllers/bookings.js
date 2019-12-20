@@ -28,6 +28,33 @@ exports.getTheBooking = function(req, res) {
     });
 };
 
+exports.postBookedDate = function(req, res) {
+    BookingModel.ODVL.updateOne(
+        {_id : req.params.bookingId},
+        {bookedDate : JSON.parse(req.body.BookedDate)},
+        {overwrite : false},
+        (err) => {
+            if(!err)
+            {
+                //if approved, issue code 0, else 1
+                if(JSON.parse(req.body.BookedDate).hasApproved)
+                {
+                    UpdateIssueCodeFunc(req.params.bookingId, 0);
+                }
+                else
+                {
+                    UpdateIssueCodeFunc(req.params.bookingId, 1);
+                }
+                res.send("successfully save");
+            }
+            else{
+                console.log(err);
+            }
+        }
+    )
+};
+
+
 exports.postAbsentees = function(req, res) {
     BookingModel.ODVL.updateOne(
         {_id : req.params.bookingId},

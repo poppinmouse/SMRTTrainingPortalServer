@@ -1,5 +1,7 @@
+const BookingModel = require('../models/booking');
+
 module.exports = (bookingId, code) => {
-    ODVL.updateOne(
+    BookingModel.ODVL.updateOne(
         {_id : bookingId},
         {issueCode : code},
         {overwrite : false},
