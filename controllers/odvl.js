@@ -1,6 +1,6 @@
 const BookingModel = require('../models/booking');
 
-exports.postBooking = function (req, res) {  
+exports.postBooking = function(req, res) {  
     const oDVL = new BookingModel.ODVL({
         bookedDate:{
             proposedDate : "",

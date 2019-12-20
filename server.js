@@ -6,10 +6,12 @@ const app = express();
 
 const oDVLRoutes = require("./routes/odvl");
 const datesRoutes = require("./routes/dates");
+const bookingsRoutes = require("./routes/bookings");
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(oDVLRoutes);
 app.use(datesRoutes);
+app.use(bookingsRoutes);
 
 
 mongoose.connect("mongodb://localhost:27017/trainingPortalDB",{useNewUrlParser: true, useUnifiedTopology: true})

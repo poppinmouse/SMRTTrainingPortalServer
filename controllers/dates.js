@@ -1,8 +1,9 @@
 const BookingModel = require('../models/booking');
+const FetchDataFunc = require('../utils/fetchData');
 
 exports.getDates = function (req, res) {
     var blockedDates = {dates : []};
-    fetchData(BookingModel.ODVL).then(bookings => {
+    FetchDataFunc(BookingModel.ODVL).then(bookings => {
         bookings.forEach(booking => {
             if(!booking.bookedDate.hasApproved)
             {
@@ -15,7 +16,7 @@ exports.getDates = function (req, res) {
                 blockedDates.dates.push(booking.bookedDate.proposedDate);
             }    
         });
-        return fetchData(BookingModel.Corrective);
+        return FetchDataFunc(BookingModel.Corrective);
     }).then(bookings => {
         bookings.forEach(booking => {
             blockedDates.dates.push(booking.bookedDate);
@@ -23,7 +24,7 @@ exports.getDates = function (req, res) {
                 blockedDates.dates.push(reservedDate);
             });
         });
-        return fetchData(BookingModel.Intervention);
+        return FetchDataFunc(BookingModel.Intervention);
     }).then(bookings => {
         bookings.forEach(booking => {
             blockedDates.dates.push(booking.bookedDate);
@@ -36,19 +37,19 @@ exports.getDates = function (req, res) {
     });
 }
 
-const fetchData = (collection) => {
-    const promise = new Promise((resolve, reject) => {
-        collection.find((err, bookings) => {
-            if(err)
-            {
-                console.log(err);
-            }
-            else
-            {
-                resolve(bookings);
-            }
-        });     
-    });
+// const fetchData = (collection) => {
+//     const promise = new Promise((resolve, reject) => {
+//         collection.find((err, bookings) => {
+//             if(err)
+//             {
+//                 console.log(err);
+//             }
+//             else
+//             {
+//                 resolve(bookings);
+//             }
+//         });     
+//     });
 
-    return promise;
-}
+//     return promise;
+// }
