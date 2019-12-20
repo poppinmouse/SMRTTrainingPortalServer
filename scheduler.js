@@ -1,3 +1,4 @@
+const schedule = require("node-schedule");
 const scheduleCallbackFunc = require("./scheduleCallback");
 
 //run every 1 min
