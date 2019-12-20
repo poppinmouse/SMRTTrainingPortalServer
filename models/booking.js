@@ -24,4 +24,6 @@ const bookingSchema = new mongoose.Schema({
     //3 = to rebook
 });
 
-module.exports = mongoose.model('ODVL', bookingSchema);
+exports.ODVL = mongoose.model('ODVL', bookingSchema);
+exports.Corrective = mongoose.model('Corrective', bookingSchema);
+exports.Intervention = mongoose.model('Intervention', bookingSchema);

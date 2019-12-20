@@ -1,7 +1,7 @@
-const ODVL = require('../models/booking');
+const BookingModel = require('../models/booking');
 
 exports.postBooking = function (req, res) {  
-    const oDVL = new ODVL({
+    const oDVL = new BookingModel.ODVL({
         bookedDate:{
             proposedDate : "",
             hasApproved : false
