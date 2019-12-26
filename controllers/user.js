@@ -1,30 +1,23 @@
-// const UserModel = require('../models/user');
+const UserModel = require('../models/user');
 
-// exports.postUser = function(req, res) {  
-//     // const user = new UserModel.User({
-//     //     username:"admin",
-//     //     password: "123",
-//     //     role: "admin"
-//     // });
-// console.log(UserModel.User);
+exports.postUser = function(req, res) {  
 
-//     const parsedUser = JSON.parse(req.body.User);
-//     const username = parsedUser.username;
-//     const password = parsedUser.password;
+    const username = JSON.parse(req.body.User).username;
+    const password = JSON.parse(req.body.User).password;
 
-//     UserModel.User.findOne({username : username}, (err, foundUser) => {
-// //         if(err)
-// //         {
-// //             console.log(err);
-// //         }
-// //         else{
-// //             if(foundUser)
-// //             {
-// //                 if(foundUser.password === password)
-// //                 {
-// //                     res.sent(foundUser.username);
-// //                 }
-// //             }
-// //         }
-//     });
-// }
+    UserModel.User.findOne({username: username}, (err, foundUser) =>{
+        if(err)
+        {
+            console.log(err);
+        }
+        else{
+            if(foundUser)
+            {
+                if(foundUser.password === password)
+                {
+                    res.send(foundUser.role);
+                }
+            }
+        }
+   });
+}
