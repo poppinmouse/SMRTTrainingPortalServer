@@ -1,11 +1,11 @@
-const FetchDataFunc = require('./utils/fetchData');
-const UpdateIssueCodeFunc = require('./utils/updateIssueCode');
-const BookingModel = require('./models/booking');
+const FetchDataFunc = require('../utils/fetchData');
+const UpdateIssueCodeFunc = require('../utils/updateIssueCode');
+const BookingModel = require('../models/booking');
 
 module.exports = () =>{
     FetchDataFunc(BookingModel.ODVL).then(bookings => {
-        bookings.forEach(booking => {
-           
+        console.log("checking");
+        bookings.forEach(booking => {          
             if(booking.bookedDate.proposedDate == "")
             {
                 var d = new Date(Math.max.apply(null, booking.reservedDates.map(reservedDate => {
